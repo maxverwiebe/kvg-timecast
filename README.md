@@ -4,12 +4,54 @@ Advanced ensemble model for predicting bus delays using time series analysis and
 
 ## Features
 
-- **Route-Specific Intelligence**: Specialized models for different bus routes and patterns
-- **Time Series Features**: Historical patterns, rolling statistics, and lag features
-- **Ensemble Learning**: Combines multiple LightGBM models with meta-learning
-- **Anomaly Detection**: Identifies unusual delay patterns
-- **Real-time Predictions**: Fast inference with confidence intervals
-- **REST API**: Easy integration with existing systems
+- Specialized models for different bus routes and patterns
+- Historical patterns, rolling statistics, and lag features (Time series features)
+- Combines multiple LightGBM models with meta-learning
+- Identifies unusual delay patterns (anomalies)
+- Fast inference with confidence intervals (in real time)
+
+## Results
+
+![alt text](images/result.png "Title")
+
+This is the result of train_model.py with MAX_RECORDS = 3_000_000; STACKING_LEARNER_MAX_SAMPLES = 100_000:
+
+```
+[...]
+============================================================
+ TRAINING PIPELINE COMPLETED SUCCESSFULLY!
+============================================================
+ Final Model Performance:
+   R^2 Score: 0.6398
+   MAE: 0.809 minutes
+   Model saved to: models/kvg_ensemble_model.pkl
+```
+
+The measurements can differ. For example the chart above used only n = 50_0000 rows of data. So the MAE is bigger in the chart.
+
+## Raw Dataset (Prior Processing)
+
+I scraped the data from the web over a period of months by querying all stops in Kiel every 15 minutes and saving the results in a .csv file.
+Therefore the complete dataset is private.
+
+But this is a little snippet of the used data. The data, which is used to train the models, has a range of 8 months and several million lines of data.
+| timestamp | busStopID | stopName | patternText | direction | actualTime | plannedTime | status | routeId | tripId | vehicleId |
+|---------------------|-----------|------------------------------|--------------|--------------|------------|-------------|------------|----------------------|----------------------|------------------------|
+| 2024-12-18 18:32:17 | 1020 | Heikendorf, Am Heidberg | 15 | Mettenhof | 18:52 | 18:52 | PREDICTED | 1610073983892324384 | 1610077840787696906 | -7638104967705910578 |
+| 2024-12-18 18:32:17 | 1005 | Belvedere | 13 | Kiel Hbf | 18:33 | 18:33 | PREDICTED | 1610073983892324382 | 1610077840787574030 | -7638104967705910932 |
+| 2024-12-18 18:32:17 | 1005 | Belvedere | 11 | Wik Kanal | 18:37 | 18:35 | PREDICTED | 1610073983892324359 | 1610077840787451151 | -7638104967705910820 |
+| 2024-12-18 18:32:17 | 1005 | Belvedere | 12 | Schilksee | 18:37 | 18:36 | PREDICTED | 1610073983892324353 | 1610077840787565838 | -7638104967705910672 |
+| 2024-12-18 18:32:17 | 1005 | Belvedere | 11 | Dietrichsdorf| 18:39 | 18:38 | PREDICTED | 1610073983892324359 | 1610077840787479822 | -7638104967705910884 |
+| 2024-12-18 18:32:17 | 1005 | Belvedere | 11 | Wik Kanal | 18:44 | 18:43 | PREDICTED | 1610073983892324359 | 1610077840787467534 | -7638104967705910912 |
+| 2024-12-18 18:32:17 | 1005 | Belvedere | 6 | Hassee | 18:46 | 18:46 | PREDICTED | 1610073983892324356 | 1610077840787827991 | -7638104967705910810 |
+| 2024-12-18 18:32:17 | 1005 | Belvedere | 12 | Kiel Hbf | 18:48 | 18:48 | PREDICTED | 1610073983892324353 | 1610077840787569934 | -7638104967705910704 |
+| 2024-12-18 18:32:17 | 1005 | Belvedere | 11 | Dietrichsdorf| 18:48 | 18:48 | PREDICTED | 1610073983892324359 | 1610077840787455247 | -7638104967705910898 |
+| 2024-12-18 18:32:17 | 1005 | Belvedere | 13 | Strande | 18:51 | 18:51 | PREDICTED | 1610073983892324382 | 1610077840788143370 | -7638104967705910868 |
+
+### Delay Distribution
+
+![alt text](images/delay_heatmap.png "Title")
+_Computed only for the first 10_000_000 rows of data._
 
 ## Project Structure
 
@@ -104,6 +146,8 @@ print(f"Predicted delay: {result['predicted_delay']:.2f} minutes")
 ```
 
 ## Model Architecture
+
+![alt text](images/model_flow.png "Title")
 
 ### Ensemble Components
 
